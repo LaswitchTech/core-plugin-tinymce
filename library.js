@@ -91,16 +91,25 @@ builder.add('inputs','mce', class extends builder.InputClass {
         // Check if value is provided
         if (value) {
 
-            // Add an interval to ensure TinyMCE is initialized
-            setInterval(function() {
-                if (typeof self._component.input.editor.mce !== 'undefined') {
-                    self._component.input.editor.mce.setContent(value);
-                    self._component.input.editor.mce.focus();
-                    clearInterval(this); // Clear the interval once TinyMCE is initialized
-                } else {
-                    console.error("TinyMCE is not initialized yet.");
-                }
-            }, 100);
+            // Check if TinyMCE is initialized
+            if (typeof this._component.input.editor.mce !== 'undefined') {
+
+                // Set the content of the editor
+                this._component.input.editor.mce.setContent(value);
+                this._component.input.editor.mce.focus();
+            } else {
+
+                // Add an interval to ensure TinyMCE is initialized
+                var interval = setInterval(function() {
+                    if (typeof self._component.input.editor.mce !== 'undefined') {
+                        clearInterval(interval);
+                        self._component.input.editor.mce.setContent(value);
+                        self._component.input.editor.mce.focus();
+                    } else {
+                        console.error("TinyMCE is not initialized yet.");
+                    }
+                }, 100);
+            }
         }
 
         // Return the content of the editor
